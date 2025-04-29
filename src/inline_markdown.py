@@ -34,3 +34,72 @@ def extract_markdown_links(text):
     pattern = r"\[([^\]]+)\]\(([^\)]+)\)"
     matches = re.findall(pattern, text)
     return matches
+
+def split_nodes_image(old_nodes):
+    new_nodes = []
+    for node in old_nodes:
+        if node.text_type != TextType.TEXT:
+            new_nodes.append(node)
+            continue
+
+        text = node.text
+        matches = extract_markdown_images(text)
+        
+        if not matches:
+            new_nodes.append(node)
+            continue
+        
+        while matches:
+            alt_text, img_link = matches[0]
+            split_parts = text.split(f"![{alt_text}]({img_link})", 1)
+            
+            if split_parts[0]:
+                new_nodes.append(TextNode(split_parts[0], TextType.TEXT))
+            
+            new_nodes.append(TextNode(alt_text, TextType.IMAGE, img_link))
+            
+            text = split_parts[1]
+            matches = extract_markdown_images(text)
+        
+        if text:
+            new_nodes.append(TextNode(text, TextType.TEXT))
+    
+    return new_nodes
+
+def split_nodes_links(old_nodes):
+    new_nodes = []
+    for node in old_nodes:
+        if node.text_type != TextType.TEXT:
+            new_nodes.append(node)
+            continue
+
+        text = node.text
+        matches = extract_markdown_links(text)
+        
+        if not matches:
+            new_nodes.append(node)
+            continue
+        
+        while matches:
+            anchor_text, url = matches[0]
+            split_parts = text.split(f"[{anchor_text}]({url})", 1)
+            
+            if split_parts[0]:
+                new_nodes.append(TextNode(split_parts[0], TextType.TEXT))
+            
+            new_nodes.append(TextNode(anchor_text, TextType.LINK, url))
+            
+            text = split_parts[1]
+            matches = extract_markdown_links(text)
+        
+        if text:
+            new_nodes.append(TextNode(text, TextType.TEXT))
+    
+    return new_nodes
+                
+node = TextNode(
+    "This is text with a link [to boot dev](https://www.boot.dev) and [to youtube](https://www.youtube.com/@bootdotdev)",
+    TextType.TEXT,
+)
+
+print(split_nodes_links([node]))
