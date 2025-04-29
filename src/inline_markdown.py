@@ -95,11 +95,4 @@ def split_nodes_links(old_nodes):
         if text:
             new_nodes.append(TextNode(text, TextType.TEXT))
     
-    return new_nodes
-                
-node = TextNode(
-    "This is text with a link [to boot dev](https://www.boot.dev) and [to youtube](https://www.youtube.com/@bootdotdev)",
-    TextType.TEXT,
-)
-
-print(split_nodes_links([node]))
+    return new_nodes              
