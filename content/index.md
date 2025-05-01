@@ -286,7 +286,7 @@
 ![Moltres](/images/Moltres.png)  
 **Moltres** — "A legendary bird Pokémon. As it flaps its flaming wings, even the night sky will turn red."
 
-![Mr Mime](/images/Mr%20Mime.png)  
+![Mr Mime](/images/MrMime.png)  
 **Mr. Mime** — "If interrupted while it is miming, it will slap around the offender with its broad hands."
 
 ![Muk](/images/Muk.png)  
