@@ -128,7 +128,7 @@
 
 ### F
 
-![Farfetchd](/images/Farfetchd.png)  
+![Farfetchd](/images/Farfetch'd.png)  
 **Farfetch'd** — "It always walks about with a plant stalk clamped in its beak. The stalk is used for building its nest."
 
 ![Fearow](/images/Fearow.png)  
