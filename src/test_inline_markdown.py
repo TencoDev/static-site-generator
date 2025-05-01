@@ -9,7 +9,7 @@ from inline_markdown import (
     markdown_to_blocks,
 )
 
-from main import markdown_to_html_node
+from main import markdown_to_html_node, extract_title
 
 from textnode import TextNode, TextType
 
@@ -140,6 +140,31 @@ class TestInlineMarkdown(unittest.TestCase):
             ],                
             new_nodes,
         )    
+        
+    def test_extract_title(self):
+        markdown = "# Sample Heading"
+        title = extract_title(markdown)
+        self.assertEqual("Sample Heading", title)
+        
+    def test_extract_title_with_whitespace(self):
+        markdown = "#    Extra Whitespace   "
+        title = extract_title(markdown)
+        self.assertEqual("Extra Whitespace", title)
+
+    def test_extract_title_no_header(self):
+        markdown = "This is just regular text"
+        with self.assertRaises(Exception):
+            extract_title(markdown)
+
+    def test_extract_title_only_h2(self):
+        markdown = "## Secondary Heading"
+        with self.assertRaises(Exception):
+            extract_title(markdown)
+
+    def test_extract_title_multiple_headers(self):
+        markdown = "# First Heading\n## Second Heading\n# Another H1"
+        title = extract_title(markdown)
+        self.assertEqual("First Heading", title)
          
 
 

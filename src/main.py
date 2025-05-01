@@ -1,6 +1,7 @@
 from textnode import *
 from blocks import *
 from inline_markdown import *
+import os, shutil
 
 def markdown_to_html_node(markdown):
     blocks = markdown_to_blocks(markdown)
@@ -100,29 +101,38 @@ def quote_to_html_node(block):
     content = " ".join(new_lines)
     children = text_to_children(content)
     return ParentNode("blockquote", children)
-                 
 
+
+def copy_to_destination(src, dest):
+    if os.path.exists(dest):
+        shutil.rmtree(dest)
+    os.mkdir(dest)
+    copy_recursively_src(src, dest)
+    
+def copy_recursively_src(src, dest):
+    src_list = os.listdir(src)
+    for src_asset in src_list:
+        src_path = os.path.join(src, src_asset)
+        if os.path.isfile(src_path):
+            dest_path = os.path.join(dest, src_asset)
+            shutil.copy(src_path, dest_path)
+            print(f"Copied file: {src_path} to {dest_path}")
+        elif os.path.isdir(src_path):
+            dest_path = os.path.join(dest, src_asset)
+            os.mkdir(dest_path)
+            print(f"Created directory: {dest_path}")
+            copy_recursively_src(src_path, dest_path)
+            
+def extract_title(markdown):
+    md_lines = markdown.splitlines()                
+    for line in md_lines:
+        if line.startswith("# "):
+            text = line[2:].strip()
+            return text
+    raise Exception("No title found")
+    
 def main():
-    md = """
-    # Sample Document
-
-    This is a normal paragraph with **bold** and _italic_ text.
-
-    - First item in an unordered list
-    - Second item with `inline code`
-    - Third item
-
-    1. First numbered item
-    2. Second item with **bold**
-    3. Third one
-
-    > This is a quoted line.
-    > This is still the quote, with _italic_.
-
-    """
-
-    node = markdown_to_html_node(md)
-    print(node.to_html())
+    copy_to_destination("static", "public")
     
 
 if __name__ == "__main__":
