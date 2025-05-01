@@ -130,9 +130,60 @@ def extract_title(markdown):
             text = line[2:].strip()
             return text
     raise Exception("No title found")
+ 
+
+def read_file(file_path):
+    file_path = str(file_path)
+    with open(file_path, 'r', encoding='utf-8') as file:
+        content = file.read()
+    return content
+
+def write_file(content, dest_path):
+    os.makedirs(os.path.dirname(dest_path), exist_ok=True)
+    with open(dest_path, 'w', encoding='utf-8') as file:
+        file.write(content)
+
+def generate_page(from_path, template_path, dest_path):
+    print(f"Generating page from {from_path} to {dest_path} using {template_path}")
+    
+    markdown_content = read_file(from_path)
+    template_content = read_file(template_path)
+
+    title = extract_title(markdown_content)
+    
+    try:
+        html_node = markdown_to_html_node(markdown_content)
+        html_content = html_node.to_html()
+    except ValueError as e:
+        print("Error converting markdown to HTML:", e)
+    
+    final_html = template_content.replace("{{ Title }}", title)
+    final_html = final_html.replace("{{ Content }}", html_content)
+    
+    write_file(final_html, dest_path)
+
+def generate_pages_recursive(dir_path_content, template_path, dest_dir_path):
+    content_list = os.listdir(dir_path_content)
+    for content in content_list:
+        file_path = os.path.join(dir_path_content, content)
+        if os.path.isfile(file_path):
+            if content.endswith('.md'):
+                new_filename = content[:-3] + '.html'
+                dest_path = os.path.join(dest_dir_path, new_filename)
+            else:
+                dest_path = os.path.join(dest_dir_path, content)
+            generate_page(file_path, template_path, dest_path )
+            print(f"Created file: {dest_path}")
+            
+        if os.path.isdir(file_path):
+            dest_path = os.path.join(dest_dir_path, content)
+            os.makedirs(dest_path, exist_ok=True)
+            print(f"Created directory: {dest_path}")
+            generate_pages_recursive(file_path, template_path, dest_path)
     
 def main():
     copy_to_destination("static", "public")
+    generate_pages_recursive("content/", "template.html", "public/")
     
 
 if __name__ == "__main__":
